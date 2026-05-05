@@ -1,0 +1,13 @@
+name: Demo Workflow
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print message
+        run: echo "Code merged successfully!"
+name: Demo Workflow       
