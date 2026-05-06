@@ -1,12 +1,48 @@
-name: Demo Workflow
+name: Web App CI
 
 on:
   push:
-    branches: [main]
+    branches: [ main, feature-update ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
-  test:
+  validate-project:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Print message
-        run: echo "Code merged successfully!"      
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: List Files
+        run: ls -la
+
+      - name: Check HTML
+        run: |
+          if [ -f index.html ]; then
+            echo "index.html exists ✅"
+          else
+            echo "Missing index.html ❌"
+            exit 1
+          fi
+
+      - name: Check CSS
+        run: |
+          if [ -f style.css ]; then
+            echo "style.css exists ✅"
+          else
+            echo "Missing style.css ❌"
+            exit 1
+          fi
+
+      - name: Check JS
+        run: |
+          if [ -f script.js ]; then
+            echo "script.js exists ✅"
+          else
+            echo "Missing script.js ❌"
+            exit 1
+          fi
+
+      - name: Final Status
+        run: echo "All checks passed 🎉"
