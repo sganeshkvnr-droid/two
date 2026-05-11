@@ -1,33 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CI Demo Project</title>
-
+    <title>My Web App</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="container">
-        <h1>GitHub Actions CI/CD Demo</h1>
+    <h1>GitHub Actions Demo</h1>
 
-        <p>This project is connected with:</p>
+    <button onclick="showMessage()">
+        Click
+    </button>
 
-        <ul>
-            <li>GitHub Actions</li>
-            <li>Auto Pull Request</li>
-            <li>Email Notification</li>
-            <li>CI Validation</li>
-        </ul>
-
-        <button onclick="showMessage()">
-            Click Me
-        </button>
-
-        <h2 id="message"></h2>
-    </div>
+    <p id="msg"></p>
 
     <script src="script.js"></script>
+
 </body>
 </html>
