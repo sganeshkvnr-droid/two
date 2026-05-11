@@ -3,10 +3,52 @@ name: Web App CI
 on:
   push:
     branches:
-      - main
+      - feature-update
 
 jobs:
-  test:
+
+  validate-project:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Check Project Files
+        run: |
+          ls
+
+          test -f index.html
+          test -f style.css
+          test -f script.js
+
+          echo "All files found"
+
+  send-email:
+    needs: validate-project
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Mail
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+
+          subject: Feature Branch Push Success
+
+          to: sganeshkvnr@gmail.com
+          from: ${{ secrets.EMAIL_USERNAME }}
+
+          body: |
+            New push detected in feature-update branch.
+
+  create-pull-request:
+    needs: validate-project
     runs-on: ubuntu-latest
 
     permissions:
@@ -14,36 +56,18 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v3
 
-      - name: Check Files
-        run: |
-          ls
-          test -f index.html
-          test -f style.css
-          test -f script.js
-
-      - name: Send Mail
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: smtp.gmail.com
-          server_port: 465
-          secure: true
-          username: ${{ secrets.EMAIL_USERNAME }}
-          password: ${{ secrets.EMAIL_PASSWORD }}
-
-          subject: Workflow Success
-          to: sganeshkvnr@gmail.com
-          from: ${{ secrets.EMAIL_USERNAME }}
-
-          body: GitHub workflow completed.
-
-      - name: Create PR
+      - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          title: Auto Pull Request
-          body: PR created automatically.
+
+          commit-message: automated pr
+          title: Automated PR from feature-update
+          body: |
+            This PR was automatically created after push.
+
           branch: auto-pr-${{ github.run_number }}
           base: main
