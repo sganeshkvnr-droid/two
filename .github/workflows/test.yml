@@ -1,10 +1,14 @@
-name: Web App CI
+name: Web App CI + Email + Auto PR
 
 on:
   push:
-    branches: [ main, feature-update ]
+    branches:
+      - main
+      - feature-update
+
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   validate-project:
@@ -20,29 +24,86 @@ jobs:
       - name: Check HTML
         run: |
           if [ -f index.html ]; then
-            echo "index.html exists "
+            echo "index.html exists"
           else
-            echo "Missing index.html "
+            echo "Missing index.html"
             exit 1
           fi
 
       - name: Check CSS
         run: |
           if [ -f style.css ]; then
-            echo "style.css exists "
+            echo "style.css exists"
           else
-            echo "Missing style.css "
+            echo "Missing style.css"
             exit 1
           fi
 
       - name: Check JS
         run: |
           if [ -f script.js ]; then
-            echo "script.js exists "
+            echo "script.js exists"
           else
-            echo "Missing script.js "
+            echo "Missing script.js"
             exit 1
           fi
 
       - name: Final Status
-        run: echo "All checks passed "
+        run: echo "All checks passed"
+
+  send-email:
+    needs: validate-project
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Send Mail
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+
+          subject: New Push to ${{ github.repository }}
+
+          to: sganeshkvnr@gmail.com
+          from: GitHub Actions <${{ secrets.EMAIL_USERNAME }}>
+
+          body: |
+            A new push was made to repository:
+            ${{ github.repository }}
+
+            Branch:
+            ${{ github.ref }}
+
+            Commit Message:
+            ${{ github.event.head_commit.message }}
+
+            Pushed by:
+            ${{ github.actor }}
+
+  auto-pull-request:
+    needs: validate-project
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+          commit-message: Auto PR from feature-update
+          title: Automated Pull Request
+          body: |
+            This PR was automatically created by GitHub Actions.
+
+          branch: auto-pr-branch
+          base: main
