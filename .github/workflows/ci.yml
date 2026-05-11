@@ -1,0 +1,81 @@
+name: CI Workflow
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+
+  ci-check:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Validate Project Files
+        run: |
+          echo "Checking project files..."
+
+          test -f index.html
+          test -f style.css
+          test -f script.js
+
+          echo "All required files exist"
+
+      - name: Send Email Notification
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+
+          subject: New Push Detected in Sub Branch
+
+          to: sganeshkvnr@gmail.com
+          from: ${{ secrets.EMAIL_USERNAME }}
+
+          body: |
+            A developer pushed code to branch:
+
+            ${{ github.ref_name }}
+
+            Repository:
+            ${{ github.repository }}
+
+            Pushed by:
+            ${{ github.actor }}
+
+            Commit Message:
+            ${{ github.event.head_commit.message }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+          base: main
+
+          branch: pr-${{ github.ref_name }}
+
+          title: Auto PR from ${{ github.ref_name }}
+
+          body: |
+            Automatic Pull Request created after successful CI checks.
+
+            Branch:
+            ${{ github.ref_name }}
+
+            Pushed by:
+            ${{ github.actor }}
+
+          draft: false
