@@ -105,5 +105,6 @@ jobs:
           body: |
             This PR was automatically created by GitHub Actions.
 
-          branch: auto-pr-branch
+          #branch: auto-pr-branch
+          branch: auto-pr-${{ github.run_number }}
           base: main
