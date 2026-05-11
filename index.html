@@ -1,23 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Login</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CI Demo Project</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="login-container">
-    <h2>Login 2</h2>
+    <div class="container">
+        <h1>GitHub Actions CI/CD Demo</h1>
 
-    <input type="text" id="username" placeholder="Enter Username">
-    <input type="password" id="password" placeholder="Enter Password">
+        <p>This project is connected with:</p>
 
-    <button onclick="login()">Login</button>
+        <ul>
+            <li>GitHub Actions</li>
+            <li>Auto Pull Request</li>
+            <li>Email Notification</li>
+            <li>CI Validation</li>
+        </ul>
 
-    <p id="error"></p>
-</div>
+        <button onclick="showMessage()">
+            Click Me
+        </button>
 
-<script src="script.js"></script>
+        <h2 id="message"></h2>
+    </div>
 
+    <script src="script.js"></script>
 </body>
 </html>
